@@ -1,13 +1,13 @@
-nama,type,timestamp,count
-nadip,pushup,2021-10-05,5
-nadip,pushup,2021-10-05,6
-nadip,pushup,2021-10-05,10
-nadip,pushup,2021-10-05,11
-nadip,pushup,2021-10-05,18
-nadip,pushup,2021-10-05,20
-nadip,pushup,2021-10-05,20
-nadip,pushup,2021-10-05,20
-nadip,pushup,2021-10-05,20
-nadip,pushup,2021-10-05,20
-nadip,pushup,2021-10-05,20
-nadip,pushup,2021-10-05,20
+nomor,nama,type,durasi,count,time_per_movement,start_time,end_time
+1,nama,xxx,xxx,0,0,0,60
+2,,,,1,0,10:30,10:31
+3,,,,1,0,10:30,10:31
+4,sads,pushup,1 Minute,0,0,15:55,Invalid date
+5,xxxa,situp,1 Minute,0,0,15:58,15:58
+6,SDASssss,pushup,1 Minute,0,0,15:59,16:00
+7,xxxx,pullup,1 Minute,0,,20:53,20:54
+8,dssddsas,pullup,1 Minute,0,,20:58,20:59
+9,SDAS,pullup,1 Minute,8,7.5,21:09,21:10
+10,SDASssss,pullup,1 Minute,1,60,21:11,21:12
+11,SDASssss,pullup,1 Minute,2,30,21:12,21:13
+12,zzzz,pullup,1 Minute,2,30,21:20,21:21

@@ -14,17 +14,21 @@
 # 2. Run "python main.py".
 # 3. Navigate the browser to the local webpage.
 from flask import Flask, render_template, Response
+from flask_cors import CORS, cross_origin
 from flask import request
 from flask import jsonify
 from camera import VideoCamera
 import json
-import csv
+import csv  
 import datetime
 import os
 from csv import DictWriter
 import cv2
+import pandas as pd
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/get_table_data": {"origins": "*"}, r"/save_data": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 camera = VideoCamera()
 
 
@@ -35,7 +39,7 @@ def gen(type):
     # video_path = os.path.join('./video_output', filename)
 
     # # camera
-    # camera.select_type(type)
+    camera.select_type(type)
     # frame_height = int(camera.video.get(3))
     # frame_width = int(camera.video.get(4))
 
@@ -94,27 +98,35 @@ def video_feed_pullup():
 
 
 '''Save data to table'''
-@app.route('/save_data', methods=['POST'])
+@app.route('/save_data', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def save_data():
-    # camera.counter, camera.type, 
+    # get how many data in database
+    df_read = pd.read_csv('./database/database_sportstracker.csv', header=0)
+    last_row = len(df_read)
+
+    # get data from FE
     data = request.get_json(force=True)
-    # print(type(data))
-    header_names = list(data.keys())
-    # # save
-    with open('./database/database_sportstracker.csv',mode='a', newline='') as f_object:
-        dict_writer = DictWriter(f_object, fieldnames=header_names)
-        dict_writer.writerow(data)
-        f_object.close()
+    record = dict()
+    record["nomor"] = last_row+1
+    record.update(data)
+
+    header_names = list(record.keys())
+    # save
+    df = pd.DataFrame(data=[record],columns=header_names)
+    df.to_csv('./database/database_sportstracker.csv',mode='a', header=False, index=False)
 
     return Response(response='Data is saved!', status=200)
 
-@app.route('/get_table_data', methods=['GET'])
+
+@app.route('/get_table_data', methods=['GET', 'OPTIONS'])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def get_table_data():
     with open('./database/database_sportstracker.csv',mode='r') as f_object:
         csv_reader = csv.reader(f_object)
         header = next(csv_reader)
 
-        # {1:{'name':, }, 2:{}}
+
         list_of_dict = []
         for row in csv_reader:
             dict_data = dict()
@@ -127,6 +139,6 @@ def get_table_data():
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    # app.run()
+    # app.run(host='0.0.0.0')
+    app.run(host='localhost')
     # socketio.run(app)

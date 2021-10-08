@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import json
 import requests
+import datetime
 
 class VideoCamera(object):
     def __init__(self, type=None):
@@ -30,7 +31,7 @@ class VideoCamera(object):
         self.state = False
         self.counter = 0
         self.confidence = 0
-
+        self.counter_frame = 0
 
     def select_type(self, type):
         #Case untuk type
@@ -51,6 +52,8 @@ class VideoCamera(object):
         else:
             self.model = None
             self.reset()
+        #for video output
+        self.video_file_name = './video_output/' + str(self.type) +'/' + str(datetime.datetime.today().date())
 
     def __del__(self):
         self.video.release()
@@ -167,7 +170,7 @@ class VideoCamera(object):
                 # output_frame = cv2.cvtColor(output_frame, cv2.COLOR_BGR2RGB)
         elif self.type == 'pushup':
             # Draw pose prediction.
-            # print(self.get_info_dashboard())
+            print(self.get_info_dashboard())
             output_frame = input_frame.copy()
             if pose_landmarks is not None:
                 mp_drawing.draw_landmarks(
@@ -180,22 +183,23 @@ class VideoCamera(object):
                 my_knn = pushup.KNNClassifier(X, y, embedding, K=5)
                 dict_result, distances_result = my_knn()
                 if dict_result["up"] > dict_result["down"] and dict_result['conf_level'] > 50:
-                    # cv2.putText(output_frame, 'up ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'up ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                     self.confidence = dict_result['conf_level']
                     self.seq_list.append('up')
                     _, self.state = self.seq_check(self.seq_list)
                     if self.state:
                         self.counter += 1
                 elif dict_result["down"] > dict_result["up"] and dict_result['conf_level'] > 50:
-                    # cv2.putText(output_frame, 'down ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'down ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                     self.confidence = dict_result['conf_level']
                     self.seq_list.append('down')
                     _, self.state = self.seq_check(self.seq_list)
                 else:
                     self.confidence = dict_result['conf_level']
-                #     cv2.putText(output_frame, 'not detected ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                # cv2.putText(output_frame, 'Count: ' + str(self.counter), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                # cv2.putText(output_frame, 'Push-up ', (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'not detected ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(output_frame, 'Count: ' + str(self.counter), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(output_frame, 'Push-up ', (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                resp = requests.post('http://127.0.0.1:7500/webcam/count/', data=self.get_info_dashboard())
         elif self.type == 'situp':
             output_frame = input_frame.copy()
             if pose_landmarks is not None:
@@ -210,12 +214,12 @@ class VideoCamera(object):
                 prediction = self.model.predict_proba(embedding)
 
                 if prediction[0][1] >= 0.8:
-                    # cv2.putText(output_frame, 'up ' + str(100*prediction[0][1]) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'up ' + str(100*prediction[0][1]) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                     self.seq_list.append('up')
                     _, self.state = self.seq_check(self.seq_list)
                     self.confidence = prediction[0][1] * 100
                 elif prediction[0][0] >= 0.8 :
-                    # cv2.putText(output_frame, 'down ' + str(prediction[0][0]*100) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'down ' + str(prediction[0][0]*100) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                     self.seq_list.append('down')
                     _, self.state = self.seq_check(self.seq_list)
                     if self.state:
@@ -224,9 +228,10 @@ class VideoCamera(object):
                     self.confidence = prediction[0][0] * 100
                 else:
                     self.confidence = prediction[0][1] * 100
-                #     cv2.putText(output_frame, 'not detected ' + str(100*prediction[0][0]) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                # cv2.putText(output_frame, 'Count: ' + str(self.counter), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                # cv2.putText(output_frame, 'Sit-up ', (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'not detected ' + str(100*prediction[0][0]) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(output_frame, 'Count: ' + str(self.counter), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(output_frame, 'Sit-up ', (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                resp = requests.post('http://127.0.0.1:7500/webcam/count/', data=self.get_info_dashboard())
         elif self.type == 'pullup':
             output_frame = input_frame.copy()
             if pose_landmarks is not None:
@@ -244,13 +249,13 @@ class VideoCamera(object):
                 dict_result, distances_result = my_knn()
 
                 if dict_result["up"] > dict_result["down"] and dict_result['conf_level'] > 50:
-                    # cv2.putText(output_frame, 'up ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'up ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                     self.confidence = dict_result['conf_level']
                     self.seq_list.append('up')
                     _, self.state = self.seq_check(self.seq_list)
 
                 elif dict_result["down"] > dict_result["up"] and dict_result['conf_level'] > 50:
-                    # cv2.putText(output_frame, 'down ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.putText(output_frame, 'down ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                     self.confidence = dict_result['conf_level']
                     self.seq_list.append('down')
                     _, self.state = self.seq_check(self.seq_list)
@@ -262,11 +267,21 @@ class VideoCamera(object):
                     cv2.putText(output_frame, 'not detected ' + str(dict_result['conf_level']) + '%', (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 cv2.putText(output_frame, 'Count: ' + str(self.counter), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 cv2.putText(output_frame, 'Pull-up ', (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-        resp = requests.post('http://127.0.0.1:7500/webcam/count/', data=self.get_info_dashboard())
-        result_json = resp.json()
+                resp = requests.post('http://127.0.0.1:7500/webcam/count/', data=self.get_info_dashboard())
+        # self.push_websocket()
+        # resp = requests.post('http://127.0.0.1:7500/webcam/count/', data=self.get_info_dashboard())
+        # result_json = resp.json()
         # print(result_json)
         ret, jpeg = cv2.imencode('.jpg', output_frame)
         return jpeg.tobytes()
+
+    def push_websocket(self):
+        if self.counter_frame == 10:
+            resp = requests.post('http://127.0.0.1:7500/webcam/count/', data=self.get_info_dashboard())
+            result_json = resp.json()
+            # print(result_json)
+        else:
+            return
 
     def get_info_dashboard(self):
         info = dict()

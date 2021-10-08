@@ -6,3 +6,4 @@ flask_restful
 pandas
 sklearn
 requests
+flask_cors
