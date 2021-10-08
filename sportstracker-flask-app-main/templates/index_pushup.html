@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+  <body>
+    <h1>Live streaming Push Up</h1>
+    <div>
+
+        <img src="{{ url_for('video_feed_pushup') }}" width="50%"/>
+        <p>Count: <span id ="counter"> </span> <br></p>
+        <p>Confidence level: <span id ="conf_level"></span><br></p>
+    </div>       
+    </body>
+</html>

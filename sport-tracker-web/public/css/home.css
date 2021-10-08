@@ -1,0 +1,20 @@
+.cardCountSubtitle{
+    font-weight: bold;
+    font-size: 96px;
+    color: white;
+}
+
+.cardCountTitle{
+    font-size: 30px;
+    color: white;
+}
+
+.cardSmallTitle{
+    font-size: 18px;
+}
+
+.cardSmallSubtitle{
+    font-weight: bold;
+    font-size: 24px;
+    color: #FA5B5A;
+}

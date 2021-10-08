@@ -1,0 +1,20 @@
+1. Install:
+	a. pip3 install django
+	b. pip3 install channels
+	c. pip3 install django-simpleui
+	d. pip3 install djangorestframework
+	e. pip3 install django-cors-headers
+	f. pip3 install channels-redis
+	g. pip3 install daphne
+2. go to websocket/Redis-x64-5.0.10. Lalu jalanin exe redis-server.exe
+3. go to websocket/sporttracker. Di cmd directory itu jalanin command "daphne --access-log sis.log -p 7500 fs_server.asgi:application"
+4. Masuk ke sportstracker-flask-app-main. jalanin "python main.py"
+5. masuk ke sport-tracker-web. 
+	run in command:
+	a. npm install (sekali aja, kalau belom install)
+	b. npm run dev
+6. masuk web-browser masukin address FE nya (localhost:3000), enter
+
+Note:
+a. repo websocket lengkap https://github.com/citotob/sporttracker
+b. repo FE lengkap https://github.com/DatasintesaID/sport-tracker-web
