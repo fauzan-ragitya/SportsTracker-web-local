@@ -1,0 +1,7 @@
+django==3.2.8
+djangorestframework==3.12.4
+django-cors-headers==3.10.0
+channels-redis==3.0.0
+redis==3.5.3
+channels==2.4.0
+daphne==2.5.0
