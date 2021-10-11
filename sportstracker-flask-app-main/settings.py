@@ -1,0 +1,1 @@
+WEBSOCKET_ADDRESS = 'http://127.0.0.1:7500/webcam/count/'
