@@ -5,3 +5,4 @@ channels-redis==3.0.0
 redis==3.5.3
 channels==2.4.0
 daphne==2.5.0
+django-simpleui==2021.8.17
