@@ -53,8 +53,21 @@ class VideoCamera(object):
         else:
             self.model = None
             self.reset()
-        #for video output
-        self.video_file_name = './video_output/' + str(self.type) +'/' + str(datetime.datetime.today().date())
+
+        # #for video output
+        # # for video output
+        # if type != None:
+            
+        #     self.video_file_name = './video_output/tmp/' + str(datetime.datetime.today().date()) + '.avi'
+            
+        #     # if not os.path.exists(self.video_file_name) :
+        #     #     self.video_file_name = './video_output/' + str(self.type) + '/' + str(datetime.datetime.today().date()) \
+        #     # + '_' + str(total_video_in_dir) +'.avi'
+            
+        #     self.frame_width = int(self.video.get(3))
+        #     self.frame_height = int(self.video.get(4))
+        #     self.fps = int(self.video.get(cv2.CAP_PROP_FPS))
+        #     self.video_file = cv2.VideoWriter(self.video_file_name, cv2.VideoWriter_fourcc('M','J','P','G'), self.fps, (self.frame_width, self.frame_height))
 
     def __del__(self):
         self.video.release()
@@ -272,6 +285,12 @@ class VideoCamera(object):
         # self.push_websocket()
         # resp = requests.post(WEBSOCKET_ADDRESS, data=self.get_info_dashboard())
         # result_json = resp.json()
+
+        ##Save to video
+        # if self.type != None:
+        #     frame_saved = cv2.resize(output_frame, (self.frame_width, self.frame_height))
+        #     self.video_file.write(np.array(frame_saved))
+
         ret, jpeg = cv2.imencode('.jpg', output_frame)
         return jpeg.tobytes()
 

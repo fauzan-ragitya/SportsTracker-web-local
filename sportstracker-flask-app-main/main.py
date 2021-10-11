@@ -25,6 +25,7 @@ import os
 from csv import DictWriter
 import cv2
 import pandas as pd
+import shutil
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/get_table_data": {"origins": "*"}, r"/save_data": {"origins": "*"}})
@@ -115,6 +116,16 @@ def save_data():
     # save
     df = pd.DataFrame(data=[record],columns=header_names)
     df.to_csv('./database/database_sportstracker.csv',mode='a', header=False, index=False)
+
+
+    # #copy file from tmp to folder
+    # nama = data['nama']
+    # type = data['type']
+    # # start_time = data['start_time']
+
+    # src = './video_output/tmp/{}.avi'.format(str(datetime.datetime.today().date()))
+    # dst = './video_output/' + type + '/' + str(last_row+1) + nama +  '.avi'
+    # shutil.copyfile(src, dst)
 
     return Response(response='Data is saved!', status=200)
 

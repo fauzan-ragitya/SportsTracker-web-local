@@ -11,3 +11,4 @@ nomor,nama,type,durasi,count,time_per_movement,start_time,end_time
 10,SDASssss,pullup,1 Minute,1,60,21:11,21:12
 11,SDASssss,pullup,1 Minute,2,30,21:12,21:13
 12,zzzz,pullup,1 Minute,2,30,21:20,21:21
+13,primitif,pushup,1 Minute,0,,10:35,10:36
