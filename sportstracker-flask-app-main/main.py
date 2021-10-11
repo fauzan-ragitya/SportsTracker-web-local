@@ -117,15 +117,16 @@ def save_data():
     df = pd.DataFrame(data=[record],columns=header_names)
     df.to_csv('./database/database_sportstracker.csv',mode='a', header=False, index=False)
 
+    #copy file from tmp to folder
+    nama = data['nama']
+    type = data['type']
+    # start_time = data['start_time']
 
-    # #copy file from tmp to folder
-    # nama = data['nama']
-    # type = data['type']
-    # # start_time = data['start_time']
-
-    # src = './video_output/tmp/{}.avi'.format(str(datetime.datetime.today().date()))
-    # dst = './video_output/' + type + '/' + str(last_row+1) + nama +  '.avi'
-    # shutil.copyfile(src, dst)
+    src = './video_output/tmp/{}.avi'.format(str(datetime.datetime.today().date()))
+    dst = './video_output/' + type + '/' + str(last_row+1) + nama +  '.avi'
+    # print(dst)
+    shutil.copyfile(src, dst)
+    # os.remove(src)
 
     return Response(response='Data is saved!', status=200)
 
