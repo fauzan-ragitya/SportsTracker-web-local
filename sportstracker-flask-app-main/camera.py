@@ -71,6 +71,7 @@ class VideoCamera(object):
             self.fps = int(self.video.get(cv2.CAP_PROP_FPS))
             self.video_file = cv2.VideoWriter(self.video_file_name, cv2.VideoWriter_fourcc('M','J','P','G'), 20, \
                 (self.frame_width, self.frame_height))
+            self.frame_saved_list = []
 
     def __del__(self):
         self.video.release()
@@ -185,6 +186,7 @@ class VideoCamera(object):
                     connections=mp_pose.POSE_CONNECTIONS)
                 pose_landmarks = np.array([ [lmk.x, lmk.y, lmk.z] for lmk in pose_landmarks.landmark], dtype=np.float32)
                 # output_frame = cv2.cvtColor(output_frame, cv2.COLOR_BGR2RGB)
+            
         elif self.type == 'pushup':
             # Draw pose prediction.
             # print(self.get_info_dashboard())
@@ -252,10 +254,10 @@ class VideoCamera(object):
         elif self.type == 'pullup':
             output_frame = input_frame.copy()
             if pose_landmarks is not None:
-                # mp_drawing.draw_landmarks(
-                #     image=output_frame,
-                #     landmark_list=pose_landmarks,
-                #     connections=mp_pose.POSE_CONNECTIONS)
+                mp_drawing.draw_landmarks(
+                    image=output_frame,
+                    landmark_list=pose_landmarks,
+                    connections=mp_pose.POSE_CONNECTIONS)
                 pose_landmarks = np.array([[lmk.x, lmk.y, lmk.z] for lmk in pose_landmarks.landmark],
                                         dtype=np.float32)
 
@@ -290,13 +292,16 @@ class VideoCamera(object):
         # result_json = resp.json()
         # print(result_json)
 
-        ##Save to video
+        # #Save to video
+        # if self.type != None:
+        #     try:
+        #         frame_saved = cv2.resize(output_frame, (self.frame_width, self.frame_height))
+        #         self.video_file.write(np.array(frame_saved))
+        #     except:
+        #         print('error')
         if self.type != None:
-            try:
-                frame_saved = cv2.resize(output_frame, (self.frame_width, self.frame_height))
-                self.video_file.write(np.array(frame_saved))
-            except:
-                print('error')
+            frame_saved = cv2.resize(output_frame, (self.frame_width, self.frame_height))
+            self.frame_saved_list.append(frame_saved)
         ret, jpeg = cv2.imencode('.jpg', output_frame)
         return jpeg.tobytes()
 
@@ -307,6 +312,15 @@ class VideoCamera(object):
     #         # print(result_json)
     #     else:
     #         return
+
+    def save_to_video(self):
+        fps = int(len(self.frame_saved_list)/60)
+        self.video_file = cv2.VideoWriter(self.video_file_name, cv2.VideoWriter_fourcc('M','J','P','G'), fps, \
+                (self.frame_width, self.frame_height))
+        for element in self.frame_saved_list:
+            self.video_file.write(np.array(element))
+        print(fps)
+        pass
 
     def get_info_dashboard(self):
         info = dict()

@@ -18,6 +18,7 @@ from flask_cors import CORS, cross_origin
 from flask import request
 from flask import jsonify
 from camera import VideoCamera
+import numpy as np
 import json
 import csv  
 import datetime
@@ -45,6 +46,7 @@ def gen(type):
     # frame_width = int(camera.video.get(4))
 
     # out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+    frame_saved_list = []
     while True:
         #timer
         frame = camera.get_frame()
@@ -121,7 +123,8 @@ def save_data():
     nama = data['nama']
     type = data['type']
     # start_time = data['start_time']
-
+    camera.save_to_video()
+    
     src = './video_output/tmp/{}.avi'.format(str(datetime.datetime.today().date()))
     dst = './video_output/' + type + '/' + str(last_row+1) + nama +  '.avi'
     # print(dst)
