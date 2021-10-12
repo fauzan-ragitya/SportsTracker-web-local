@@ -16,13 +16,10 @@
 from flask import Flask, render_template, Response
 from flask_cors import CORS, cross_origin
 from flask import request
-from flask import jsonify
 from camera import VideoCamera
-import json
 import csv  
 import datetime
 import os
-from csv import DictWriter
 import cv2
 import pandas as pd
 import shutil
