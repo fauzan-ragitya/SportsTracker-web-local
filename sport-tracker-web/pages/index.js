@@ -32,7 +32,6 @@ const OverviewPage = ({ session }) => {
   const [duration, setDuration] = useState("00:00");
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const [countSaved, setCountSaved] = useState(0);
 
   /*=== Notification Logic ===*/
   const openNotification = () => {
@@ -62,7 +61,6 @@ const OverviewPage = ({ session }) => {
         /*=== Do the timer logic and other things to do here ===*/
         setStartTime(moment().format('HH:mm'))
         setCountdown(0);
-        setCountSaved(0);
         var dur = 60;
         switch (option) {
           case "pushup":
@@ -88,7 +86,6 @@ const OverviewPage = ({ session }) => {
           clearInterval(timerActivity);
           setIsDone(true);
           setStartClicked(false);
-          setCountSaved(count);
           setConfidence(0);
           setEndTime(moment().format('HH:mm'))
           setVideoSource("video_feed");
@@ -107,7 +104,7 @@ const OverviewPage = ({ session }) => {
       type: option,
       durasi: "1 Minute",
       count: count,
-      time_per_movement: 60/count,
+      time_per_movement: !count ? 60/count : "-",
       start_time: startTime,
       end_time: endTime
     })
@@ -132,7 +129,6 @@ const OverviewPage = ({ session }) => {
       const socket = new WebSocket("ws://127.0.0.1:7500/ws/1/");
       socket.addEventListener("message", function (event) {
         var data = JSON.parse(JSON.parse(event.data).message);
-        // console.log(data);
         if(data.count !== count){
           setCount(data.count);
         }
